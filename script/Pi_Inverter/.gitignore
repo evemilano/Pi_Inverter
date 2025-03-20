@@ -1,3 +1,6 @@
 /venv/
 /power_log.csv
 /power_cons_log.csv
+__pycache__/
+*.pyc
+*.csv
