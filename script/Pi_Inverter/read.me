@@ -1,0 +1,48 @@
+# CSV File in the Pi_Inverter Script
+
+## The CSV File: `power_log.csv`
+
+The script generates and maintains a single CSV file named `power_log.csv` which is defined in the constants section:
+
+```python
+CSV_FILENAME = "power_log.csv"
+```
+
+### Purpose and Structure
+
+This CSV file serves as a log of power readings from a solar inverter (SUN2000-6KTL-M1 model). The file:
+
+1. **Structure**: Contains two columns:
+   - **Timestamp**: In the format `YYYY_MM_DD_HH:MM`
+   - **Power**: The power value in watts read from the inverter
+
+2. **Location**: The file is stored in the same directory as the script:
+   ```python
+   script_dir = os.path.dirname(os.path.abspath(__file__))
+   csv_filepath = os.path.join(script_dir, CSV_FILENAME)
+   ```
+
+### How the CSV is Used
+
+The script interacts with this CSV file in several ways:
+
+1. **Data Collection**: 
+   - During daylight hours (between 6:00 and 20:00), the script polls the inverter every `POLL_INTERVAL` seconds (default 60)
+   - It records the timestamp and power value to the CSV file using the `append_to_csv()` function
+
+2. **Data Visualization**:
+   - The historical data from the CSV is used to calculate relative power levels for LED display
+   - During nighttime (20:00-6:00), it uses the day's data to create a bar chart visualization on the SenseHat LED matrix
+
+3. **Data Maintenance**:
+   - The script performs daily cleanup of the CSV file via the `daily_cleanup()` function
+   - The `cleanup_csv()` function removes entries older than one year to prevent the file from growing too large
+
+### Key Functions for CSV Management
+
+1. `append_to_csv(csv_filepath, timestamp, power)`: Adds new power readings to the CSV
+2. `read_csv_data(csv_filepath)`: Reads the CSV and returns data as a list of (timestamp, power) tuples
+3. `cleanup_csv(csv_filepath)`: Removes entries older than one year
+4. `get_daylight_bar_values(csv_filepath, num_bars=8)`: Processes CSV data to generate visualization values
+
+The script does not appear to generate a second CSV file. All operations are performed on this single `power_log.csv` file.
