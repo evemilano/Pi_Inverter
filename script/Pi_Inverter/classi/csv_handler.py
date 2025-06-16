@@ -178,6 +178,14 @@ class CSVHandler:
             levels = [0] * num_bars  # Tutti i livelli sono 0
         else:
             # Calcola il livello per ogni valore medio, normalizzando rispetto al massimo storico
-            levels = [min(8, max(0, int(round((val / historical_max) * 8)))) for val in avg_values]
+            # Usa 8 LED se la media è almeno il 90% del massimo storico
+            levels = []
+            for val in avg_values:
+                ratio = val / historical_max
+                if ratio >= 0.9:
+                    level = 8
+                else:
+                    level = min(8, max(0, int(round(ratio * 8))))
+                levels.append(level)
             
         return levels  # Restituisce i livelli per il grafico a barre 
