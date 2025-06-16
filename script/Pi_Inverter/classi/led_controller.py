@@ -87,15 +87,15 @@ class LEDController:
                             wave_effect = min_brightness + (1 - min_brightness) * abs((shift - 3.5) / 3.5)
                             wave_effect = wave_effect ** (1 - 0.5 * grid_ratio)
                             
-                            # Colore rosso per valori positivi, blu per negativi
+                            # Colore blu per valori positivi, rosso per negativi
                             if self.current_grid_power >= 0:  # Invertiamo la condizione
-                                new_r = int(255 * wave_effect)
-                                new_g = int(0 * wave_effect)
-                                new_b = int(0 * wave_effect)
-                            else:
                                 new_r = int(0 * wave_effect)
                                 new_g = int(0 * wave_effect)
                                 new_b = int(255 * wave_effect)
+                            else:
+                                new_r = int(255 * wave_effect)
+                                new_g = int(0 * wave_effect)
+                                new_b = int(0 * wave_effect)
                             
                             pixels.append((new_r, new_g, new_b))
                         else:

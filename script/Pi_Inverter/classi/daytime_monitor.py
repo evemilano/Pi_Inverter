@@ -51,10 +51,10 @@ class DaytimeMonitor:
         solar_color = self.led_controller.choose_color(solar_power, solar_historical)
         
         # Mostra i messaggi
-        self.led_controller.show_message(f"Sol: {solar_power:.1f} W", 
+        self.led_controller.show_message(f"Sol: {solar_power/1000:.1f} kW", 
                                       color=solar_color, scroll_speed=0.06)
         self.led_controller.show_message(f"Rete: {grid_power:.1f} kW", 
-                                      color=self.led_controller.RED if grid_power >= 0 else self.led_controller.BLUE, 
+                                      color=self.led_controller.BLUE if grid_power >= 0 else self.led_controller.RED, 
                                       scroll_speed=0.06)
         
         # Aggiorna la matrice LED con entrambe le barre

@@ -11,6 +11,16 @@
 # per eseguire lo script:
 # sudo /home/pi/Python/script/Pi_Inverter/venv/bin/python /home/pi/Python/script/Pi_Inverter/rbp4_8gb_inverter.py
 
+'''
+Modello: Raspberry Pi 4 Model B Rev 1.5
+Architettura: aarch64 (ARM 64-bit)
+RAM: 8GB (7.6GB disponibili al sistema)
+Sistema operativo: Linux a 64-bit
+'''
+
+
+
+
 # Importazione dei moduli standard di Python
 import threading    # Per creare ed eseguire thread paralleli
 import os           # Per interagire con il sistema operativo
