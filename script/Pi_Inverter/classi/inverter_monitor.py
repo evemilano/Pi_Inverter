@@ -17,8 +17,8 @@ class InverterMonitor:
         # Costanti
         self.INVERTER_IP = "192.168.1.11"
         self.MODBUS_PORT = 502
-        self.POLL_INTERVAL = 60
-        self.csv_filepath = os.path.join(os.path.dirname(os.path.dirname(__file__)), "power_log.csv")
+        self.POLL_INTERVAL = 60 #60
+        self.csv_filepath = os.path.join(os.path.dirname(os.path.dirname(__file__)), "logs", "power_log.csv")
         self.daily_energy_file = os.path.join(os.path.dirname(os.path.dirname(__file__)), "last_daily_energy.json")
         self.SERVICE_FILE_PATH = "/etc/systemd/system/rbp4_8gb_inverter.service"
         self.SERVICE_NAME = "rbp4_8gb_inverter.service"

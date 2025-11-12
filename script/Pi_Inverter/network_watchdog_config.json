@@ -1,0 +1,38 @@
+{
+  "watchdog": {
+    "enabled": true,
+    "check_interval": 120,
+    "max_failures": 10,
+    "ping_timeout": 10,
+    "enable_reboot": true,
+    "hosts_to_check": [
+      "8.8.8.8",
+      "1.1.1.1"
+    ]
+  },
+  "description": {
+    "enabled": "Abilita o disabilita il watchdog (true/false)",
+    "check_interval": "Intervallo in secondi tra i controlli di rete",
+    "max_failures": "Numero di fallimenti consecutivi prima del riavvio",
+    "ping_timeout": "Timeout in secondi per ogni ping",
+    "enable_reboot": "Se true, riavvia il sistema quando max_failures è raggiunto",
+    "hosts_to_check": "Lista di host IP da pingare (gateway locale viene aggiunto automaticamente)"
+  },
+  "esempi_configurazione": {
+    "conservativo": {
+      "check_interval": 120,
+      "max_failures": 15,
+      "descrizione": "Controlla ogni 2 minuti, riavvia dopo 30 minuti offline"
+    },
+    "aggressivo": {
+      "check_interval": 30,
+      "max_failures": 6,
+      "descrizione": "Controlla ogni 30 secondi, riavvia dopo 3 minuti offline"
+    },
+    "moderato": {
+      "check_interval": 60,
+      "max_failures": 10,
+      "descrizione": "Configurazione di default - controlla ogni minuto, riavvia dopo 10 minuti"
+    }
+  }
+}

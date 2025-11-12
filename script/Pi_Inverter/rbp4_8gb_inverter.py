@@ -35,6 +35,7 @@ from classi.daytime_monitor import DaytimeMonitor          # Monitoraggio specif
 from classi.nighttime_monitor import NighttimeMonitor      # Monitoraggio specifico per la notte
 from classi.service_manager import ServiceManager          # Gestione del servizio systemd
 from classi.csv_handler import CSVHandler                  # Gestione dei file CSV
+from classi.network_watchdog import NetworkWatchdog        # Watchdog per la connettività di rete
 
 # Inizializzazione dell'interfaccia SenseHat per visualizzare messaggi
 sense = SenseHat()      # Crea un'istanza dell'oggetto SenseHat
@@ -127,6 +128,25 @@ def main():
     )
     # Avvia l'esecuzione del thread di pulizia
     cleanup_thread.start()
+
+    # -------------------- AVVIO NETWORK WATCHDOG --------------------
+    # Inizializza e avvia il watchdog per il monitoraggio della rete
+    # Il watchdog controlla la connettività ogni 60 secondi e riavvia il sistema
+    # dopo 10 fallimenti consecutivi (circa 10 minuti di disconnessione)
+    # La configurazione può essere personalizzata nel file network_watchdog_config.json
+    config_file = os.path.join(os.path.dirname(inverter_monitor.SCRIPT_PATH), 'network_watchdog_config.json')
+    network_watchdog = NetworkWatchdog(
+        check_interval=60,          # Controlla la rete ogni 60 secondi
+        max_failures=10,            # Riavvia dopo 10 fallimenti (10 minuti offline)
+        ping_timeout=5,             # Timeout di 5 secondi per ogni ping
+        enable_reboot=True,         # Abilita il riavvio automatico
+        config_file=config_file     # Carica configurazione da file JSON (se esiste)
+    )
+    # Avvia il watchdog in background
+    network_watchdog.start()
+    inverter_monitor.sense.show_message("Network watchdog attivato", 
+                            text_colour=inverter_monitor.GREEN, scroll_speed=0.03)
+    # ----------------------------------------------------------------
 
     # Mostra un messaggio di avvio sul display SenseHat con informazioni sul polling
     inverter_monitor.sense.show_message(f"Servizio di monitoraggio inverter avviato. Polling ogni {inverter_monitor.POLL_INTERVAL} secondi.", 

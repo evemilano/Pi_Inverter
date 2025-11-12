@@ -1,0 +1,12 @@
+2025-11-12 18:16:48 - NetworkWatchdog - INFO - NetworkWatchdog inizializzato
+2025-11-12 18:16:48 - NetworkWatchdog - INFO - Check interval: 120s, Max failures: 10
+2025-11-12 18:16:48 - NetworkWatchdog - INFO - Host monitorati: 8.8.8.8, 1.1.1.1
+2025-11-12 18:16:48 - NetworkWatchdog - INFO - Riavvio automatico: ABILITATO
+2025-11-12 18:16:48 - NetworkWatchdog - INFO - Watchdog avviato
+2025-11-12 18:16:48 - NetworkWatchdog - INFO - Thread watchdog avviato
+2025-11-12 18:21:12 - NetworkWatchdog - INFO - NetworkWatchdog inizializzato
+2025-11-12 18:21:12 - NetworkWatchdog - INFO - Check interval: 120s, Max failures: 10
+2025-11-12 18:21:12 - NetworkWatchdog - INFO - Host monitorati: 8.8.8.8, 1.1.1.1
+2025-11-12 18:21:12 - NetworkWatchdog - INFO - Riavvio automatico: ABILITATO
+2025-11-12 18:21:12 - NetworkWatchdog - INFO - Watchdog avviato
+2025-11-12 18:21:12 - NetworkWatchdog - INFO - Thread watchdog avviato
