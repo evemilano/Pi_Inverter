@@ -334,11 +334,12 @@ Systemd integration:
 
 ## 📝 License
 
-[Specify your license here]
+Private
 
 ## 👤 Author
 
-[Your name/organization]
+Giovanni Sacheli
+@evemilano
 
 ## 🙏 Acknowledgments
 
@@ -348,7 +349,7 @@ Systemd integration:
 
 ## 📞 Support
 
-For issues, questions, or contributions, please [specify contact method or issue tracker].
+For issues, questions, or contributions, please look at the sun.
 
 ---
 
