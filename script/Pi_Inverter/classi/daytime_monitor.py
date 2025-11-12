@@ -17,7 +17,7 @@ class DaytimeMonitor:
         self.apc_monitor = APCMonitor()
         
         # Usa lo stesso approccio di InverterMonitor per il percorso del file
-        self.grid_csv_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "power_cons_log.csv")
+        self.grid_csv_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), "logs", "power_cons_log.csv")
         self.grid_csv_handler = CSVHandler(self.grid_csv_path)
 
     def update(self):
