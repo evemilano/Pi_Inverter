@@ -104,6 +104,55 @@ class LEDController:
                 self.sense.set_pixels(pixels)
                 time.sleep(wave_speed)
 
+    def update_single_bar(self, level, color_mode='auto', base_wave_speed=0.3, base_cycles=20):
+        """
+        Mostra una singola barra a 8 colonne con effetto onda.
+        Riutilizza la logica di update_led_matrix per una barra full-width.
+
+        - level: altezza della barra (1-8)
+        - color_mode: 'blue' (positivo), 'red' (negativo), o tupla RGB
+        - base_wave_speed: velocità base dell'animazione
+        - base_cycles: numero base di cicli
+        """
+        ratio = max(0.1, level / 8.0)
+        wave_speed = base_wave_speed * (1 - 0.7 * ratio)
+        cycles = int(base_cycles + (20 * ratio))
+        min_brightness = 0.4 - (0.2 * ratio)
+
+        # Determina il colore base
+        if color_mode == 'blue':
+            r, g, b = 0, 0, 255
+        elif color_mode == 'red':
+            r, g, b = 255, 0, 0
+        elif isinstance(color_mode, tuple):
+            r, g, b = color_mode
+        else:
+            # Auto: usa il valore corrente della rete
+            if self.current_grid_power >= 0:
+                r, g, b = 0, 0, 255
+            else:
+                r, g, b = 255, 0, 0
+
+        for cycle in range(cycles):
+            for shift in range(8):
+                pixels = []
+                for y in range(8):
+                    for x in range(8):  # 8 colonne invece di 4
+                        if y >= 8 - level:
+                            wave_effect = min_brightness + (1 - min_brightness) * abs((shift - 3.5) / 3.5)
+                            wave_effect = wave_effect ** (1 - 0.5 * ratio)
+
+                            new_r = int(r * wave_effect)
+                            new_g = int(g * wave_effect)
+                            new_b = int(b * wave_effect)
+
+                            pixels.append((new_r, new_g, new_b))
+                        else:
+                            pixels.append(self.BLACK)
+
+                self.sense.set_pixels(pixels)
+                time.sleep(wave_speed)
+
     def show_message(self, message, color=None, scroll_speed=0.06):
         """Mostra un messaggio sulla matrice LED."""
         self.sense.show_message(message, text_colour=color, scroll_speed=scroll_speed)
