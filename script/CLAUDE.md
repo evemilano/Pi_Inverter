@@ -48,6 +48,7 @@ Stand-alone test scripts in `stand_alone_/` can be run individually for testing 
 - `Pi_Inverter/logs/power_cons_log.csv` — grid consumption time series (timestamp, kW)
 - `Pi_Inverter/last_daily_energy.json` — persisted daily yield (updated at hours 20–22)
 - `Pi_Inverter/network_watchdog_config.json` — watchdog tuning (interval, max failures, hosts)
+- `Pi_Inverter/logs/network_watchdog.log` — network watchdog log (connectivity checks, failures, reboots)
 
 ## Notes
 

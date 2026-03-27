@@ -157,31 +157,42 @@ class LEDController:
         """Mostra un messaggio sulla matrice LED."""
         self.sense.show_message(message, text_colour=color, scroll_speed=scroll_speed)
 
+    def _percentile(self, values, pct):
+        """Calcola il percentile di una lista di valori."""
+        sorted_vals = sorted(values)
+        idx = int(len(sorted_vals) * pct / 100)
+        return sorted_vals[min(idx, len(sorted_vals) - 1)]
+
     def calculate_level(self, current_power, historical_values):
         """Calcola il livello (da 1 a 8) per la visualizzazione del potenziometro."""
         if not historical_values:
             return 8 if current_power > 0 else 0
-        
+
         # Separa i valori positivi e negativi dalla storia
         positive_values = [x for x in historical_values if x >= 0]
         negative_values = [x for x in historical_values if x < 0]
-        
+
         if current_power >= 0:
-            max_power = max(positive_values) if positive_values else 0
+            if not positive_values:
+                return 0
+            # Usa il 98° percentile per ignorare spike anomali
+            max_power = self._percentile(positive_values, 98)
             if max_power == 0:
                 return 0
             level = round((current_power / max_power) * 8)
             if level < 1 and current_power > 0:
                 level = 1
         else:
-            min_power = min(negative_values) if negative_values else 0
+            if not negative_values:
+                return 0
+            # Usa il 2° percentile (valore più negativo escludendo outlier)
+            min_power = self._percentile(negative_values, 2)
             if min_power == 0:
                 return 0
-            # Usiamo il valore assoluto per calcolare la proporzione
             level = round((abs(current_power) / abs(min_power)) * 8)
             if level < 1:
                 level = 1
-            
+
         return min(level, 8)
 
     def choose_color(self, current_power, historical_values):
