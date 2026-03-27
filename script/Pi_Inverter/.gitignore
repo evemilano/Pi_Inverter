@@ -4,3 +4,5 @@
 __pycache__/
 *.pyc
 *.csv
+last_daily_energy.json
+network_watchdog.log
