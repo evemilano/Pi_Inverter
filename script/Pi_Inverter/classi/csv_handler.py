@@ -94,6 +94,18 @@ class CSVHandler:
         data = self.read_csv_data()
         # Filtra i dati, mantenendo solo quelli con timestamp successivo alla data limite
         filtered_data = [(ts, power) for ts, power in data if ts >= threshold_date]
+        # Archivia i dati vecchi prima di cancellarli
+        old_data = [(ts, power) for ts, power in data if ts < threshold_date]
+        if old_data:
+            archive_path = self.csv_filepath.replace(".csv", "_archive.csv")
+            try:
+                with open(archive_path, "a", newline="", encoding="utf-8") as f:
+                    writer = csv.writer(f)
+                    for ts, power in old_data:
+                        writer.writerow([ts.strftime("%Y_%m_%d_%H:%M"), power])
+                print(f"Archiviati {len(old_data)} record in {archive_path}")
+            except Exception as e:
+                print(f"Errore nell'archiviazione: {e}")
         try:
             # Apre il file in modalità scrittura (sovrascrive il contenuto esistente)
             with open(self.csv_filepath, "w", newline="", encoding="utf-8") as f:
