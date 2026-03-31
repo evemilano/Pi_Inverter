@@ -50,9 +50,15 @@ Stand-alone test scripts in `stand_alone_/` can be run individually for testing 
 - `Pi_Inverter/network_watchdog_config.json` — watchdog tuning (interval, max failures, hosts)
 - `Pi_Inverter/logs/network_watchdog.log` — network watchdog log (connectivity checks, failures, reboots)
 
+## Debugging
+
+- Modbus read errors are logged via `print()` to stdout (not on the SenseHat LED) to avoid blocking the polling cycle
+- View live errors with: `sudo journalctl -u rbp4_8gb_inverter.service -f`
+
 ## Notes
 
 - All code comments and UI messages are in Italian
 - The system runs headless on a Raspberry Pi; the only display is the 8x8 SenseHat LED matrix
 - Modbus register values are signed 32-bit (two 16-bit registers, big-endian, two's complement)
 - Grid power sign convention: positive = consuming from grid, negative = exporting to grid
+- Modbus reads use a shared TCP connection per polling cycle (single connect → read solar → 0.5s delay → read grid → close) to reduce SDongle load

@@ -61,8 +61,16 @@ class NighttimeMonitor:
 
     def display_grid_bar(self):
         """Mostra la barra di consumo rete a 8 colonne con effetto onda"""
-        # Ottieni il consumo corrente dalla rete
-        grid_power = self.apc_monitor.get_power_consumption()
+        # Ottieni il consumo corrente dalla rete (connessione dedicata con timeout=5)
+        client = self.inverter_monitor.create_client()
+        try:
+            if client.connect():
+                grid_power = self.apc_monitor.get_power_consumption(client=client)
+            else:
+                grid_power = 0.0
+                print("Connessione all'inverter fallita nel ciclo notturno (grid bar)")
+        finally:
+            client.close()
 
         # Aggiorna il valore corrente nel LED controller
         self.led_controller.current_grid_power = grid_power

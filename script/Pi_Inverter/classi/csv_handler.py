@@ -109,6 +109,12 @@ class CSVHandler:
             self.sense.show_message("Errore durante il cleanup del CSV", 
                                  text_colour=self.RED, scroll_speed=0.03)
 
+    def _percentile(self, values, pct):
+        """Calcola il percentile di una lista di valori."""
+        sorted_vals = sorted(values)
+        idx = int(len(sorted_vals) * pct / 100)
+        return sorted_vals[min(idx, len(sorted_vals) - 1)]
+
     def get_day_power_chart(self, num_bars=8, day_start_hour=6, day_end_hour=20):
         """
         Calcola i valori per creare un grafico a barre che rappresenta la potenza durante il giorno.
@@ -131,8 +137,9 @@ class CSVHandler:
         # Determina la data target: se è prima dell'ora di inizio, usa il giorno precedente
         target_date = now.date() if now.hour >= day_start_hour else (now - timedelta(days=1)).date()
 
-        # Calcola il valore massimo di potenza da tutti i dati storici (o 1 se non ci sono dati)
-        historical_max = max([power for _, power in all_data]) if all_data else 1
+        # Calcola il 98° percentile dei valori positivi storici (ignora spike anomali)
+        positive_values = [power for _, power in all_data if power > 0]
+        historical_max = self._percentile(positive_values, 98) if positive_values else 1
 
         # Filtra i dati per ottenere solo quelli del giorno target e con potenza positiva
         daylight_data = [(ts, power) for ts, power in all_data

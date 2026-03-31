@@ -1,0 +1,19 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(find /home/pi/Python/script/Pi_Inverter -name *.log -type f)",
+      "Bash(grep -r \"FusionSolar\\\\|SDongle\\\\|power meter\\\\|meter data\" /home/pi/Python/script --include=\"*.py\" --include=\"*.md\" ! -path \"*/venv/*\")",
+      "Bash(ls -la /home/pi/Python/script/Pi_Inverter/classi/*.py)",
+      "Bash(journalctl -u rbp4_8gb_inverter.service -n 50)",
+      "Bash(grep -r \"timeout\\\\|connect\\\\|retry\" /home/pi/Python/script/Pi_Inverter/classi/*.py)",
+      "Bash(python3 -c \"from pymodbus.client import ModbusTcpClient; help\\(ModbusTcpClient.__init__\\)\")",
+      "Bash(sudo journalctl:*)",
+      "Bash(/home/pi/Python/script/Pi_Inverter/venv/bin/pip show:*)",
+      "Bash(/home/pi/Python/script/Pi_Inverter/venv/bin/python -c \"from pymodbus.client import ModbusTcpClient; help\\(ModbusTcpClient.__init__\\)\")",
+      "Bash(sudo systemctl:*)"
+    ],
+    "additionalDirectories": [
+      "/home/pi/.claude/plans"
+    ]
+  }
+}

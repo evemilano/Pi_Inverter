@@ -45,6 +45,12 @@ class InverterMonitor:
         self.last_daily_yield = 0.0
         self.last_daily_yield_time = 0
 
+    def create_client(self):
+        """Crea un client Modbus TCP con timeout esplicito."""
+        client = ModbusTcpClient(self.INVERTER_IP, port=self.MODBUS_PORT, timeout=5)
+        client.unit = 1
+        return client
+
     def decode_int32_signed(self, registers):
         """
         Decodifica due registri a 16 bit in un valore intero signed a 32 bit.
@@ -62,74 +68,77 @@ class InverterMonitor:
             value = -((~value & 0xFFFFFFFF) + 1)
         return value
 
-    def query_inverter(self, max_retries=3, delay=1):
-        """Tenta di leggere il valore dell'inverter fino a max_retries volte."""
+    def query_inverter(self, max_retries=3, delay=1, client=None):
+        """Tenta di leggere il valore dell'inverter fino a max_retries volte.
+
+        Args:
+            max_retries: Numero massimo di tentativi
+            delay: Ritardo tra i tentativi in secondi
+            client: Client Modbus già connesso (opzionale). Se fornito, non viene chiuso.
+        """
+        external_client = client is not None
         for attempt in range(1, max_retries + 1):
-            client = ModbusTcpClient(self.INVERTER_IP, port=self.MODBUS_PORT)
-            client.unit = 1
+            if not external_client:
+                client = self.create_client()
             try:
-                if not client.connect():
-                    self.sense.show_message(f"Tentativo {attempt}: Connessione fallita con l'inverter: {self.INVERTER_IP}", 
-                                         text_colour=self.RED, scroll_speed=0.03)
+                if not external_client and not client.connect():
+                    print(f"Tentativo {attempt}: Connessione fallita con l'inverter: {self.INVERTER_IP}")
                     continue
 
                 result = client.read_holding_registers(address=self.POWER_REGISTER, count=self.REGISTER_COUNT)
                 if result.isError():
-                    self.sense.show_message(f"Tentativo {attempt}: Errore nella lettura registri: {result}", 
-                                         text_colour=self.RED, scroll_speed=0.03)
+                    print(f"Tentativo {attempt}: Errore nella lettura registri: {result}")
                     continue
 
                 if not hasattr(result, 'registers') or len(result.registers) < self.REGISTER_COUNT:
-                    self.sense.show_message(f"Tentativo {attempt}: Lettura registri non andata a buon fine: registri insufficienti.", 
-                                         text_colour=self.RED, scroll_speed=0.03)
+                    print(f"Tentativo {attempt}: Lettura registri non andata a buon fine: registri insufficienti.")
                     continue
 
                 if len(result.registers) == 1:
                     power_value = result.registers[0]
                 else:
-                    # Utilizza la funzione di decodifica per valori signed
                     power_value = self.decode_int32_signed(result.registers)
                 return power_value
 
             except Exception as e:
-                self.sense.show_message(f"Tentativo {attempt}: Errore nella lettura dall'inverter: {e}.", 
-                                     text_colour=self.RED, scroll_speed=0.03)
+                print(f"Tentativo {attempt}: Errore nella lettura dall'inverter: {e}")
             finally:
-                client.close()
+                if not external_client:
+                    client.close()
 
             time.sleep(delay)
 
-        self.sense.show_message("Tutti i tentativi di lettura dall'inverter sono falliti.", 
-                             text_colour=self.RED, scroll_speed=0.03)
-        return None 
+        print("Tutti i tentativi di lettura dall'inverter sono falliti.")
+        return None
 
-    def read_daily_yield(self):
+    def read_daily_yield(self, client=None):
         """
         Legge il valore di produzione giornaliera dall'inverter.
+        Args:
+            client: Client Modbus già connesso (opzionale). Se fornito, non viene chiuso.
         Returns:
             float: Valore in kWh o None in caso di errore
         """
-        client = ModbusTcpClient(self.INVERTER_IP, port=self.MODBUS_PORT)
-        client.unit = 1
+        external_client = client is not None
+        if not external_client:
+            client = self.create_client()
         try:
-            if not client.connect():
+            if not external_client and not client.connect():
                 return None
 
             result = client.read_holding_registers(address=self.DAILY_YIELD_REGISTER, count=2)
             if result.isError():
                 return None
-
             if not hasattr(result, 'registers') or len(result.registers) < 2:
                 return None
-
             # Combina i due registri e divide per 100 per ottenere i kWh
             value = ((result.registers[0] << 16) | result.registers[1]) / 100.0
             return value
-
         except Exception as e:
             return None
         finally:
-            client.close()
+            if not external_client:
+                client.close()
 
     def read_daily_power_from_file(self):
         """Legge il valore del daily power dal file JSON"""

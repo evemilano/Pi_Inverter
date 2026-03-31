@@ -25,34 +25,43 @@ class APCMonitor:
             value = -((~value & 0xFFFFFFFF) + 1)
         return value
 
-    def read_inverter_register(self, register, count):
+    def read_inverter_register(self, register, count, client=None):
         """
         Legge un registro dall'inverter con gestione degli errori e riprova.
+        Args:
+            register: Indirizzo del registro Modbus
+            count: Numero di registri da leggere
+            client: Client Modbus già connesso (opzionale). Se fornito, non viene chiuso.
         """
+        external_client = client is not None
         for _ in range(3):
-            client = ModbusTcpClient(self.INVERTER_IP, port=self.MODBUS_PORT)
-            client.unit = 1  # Unit ID (slave)
+            if not external_client:
+                client = ModbusTcpClient(self.INVERTER_IP, port=self.MODBUS_PORT, timeout=5)
+                client.unit = 1
 
             try:
-                if client.connect():
+                if external_client or client.connect():
                     result = client.read_holding_registers(address=register, count=count)
                     if not result.isError() and hasattr(result, 'registers') and len(result.registers) >= count:
                         return result.registers
             except Exception:
                 pass
             finally:
-                client.close()
+                if not external_client:
+                    client.close()
             time.sleep(1)
         return None
 
-    def get_power_consumption(self):
+    def get_power_consumption(self, client=None):
         """
         Legge il consumo di potenza dalla rete.
+        Args:
+            client: Client Modbus già connesso (opzionale).
         Returns:
             float: Valore di potenza in kW, 0 se non disponibile
         """
-        registers = self.read_inverter_register(self.TARGET_REGISTER, 2)
+        registers = self.read_inverter_register(self.TARGET_REGISTER, 2, client=client)
         if registers:
             value = self.decode_int32_signed(registers) / 1000.0
             return value
-        return 0.0 
+        return 0.0
