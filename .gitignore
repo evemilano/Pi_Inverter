@@ -1,0 +1,28 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.egg-info/
+
+# Virtual environments
+venv/
+.venv/
+env/
+
+# Runtime data — Pi_Inverter
+script/Pi_Inverter/logs/
+script/Pi_Inverter/last_daily_energy.json
+script/Pi_Inverter_v2/last_daily_energy.json
+
+# CSV / log files
+*.csv
+*.log
+
+# Editor / OS
+.vscode/
+.idea/
+*.swp
+.DS_Store
+
+# Claude local overrides
+.claude/settings.local.json

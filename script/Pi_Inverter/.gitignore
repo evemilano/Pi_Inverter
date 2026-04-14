@@ -1,8 +1,0 @@
-/venv/
-/power_log.csv
-/power_cons_log.csv
-__pycache__/
-*.pyc
-*.csv
-last_daily_energy.json
-network_watchdog.log
